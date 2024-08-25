@@ -1,4 +1,17 @@
-numbers = 1, 2, 3, 4, 5, 6
+contacts ={
+    'Persona_1':{
+        'Nombre': 'Carla',
+        'Apellido': 'Florida',
+        'Altura': 1.60,
+        'Edad': 29,
+    },
+    'Persona_2':{
+        'Nombre': 'Diego',
+        'Apellido': 'Antezana',
+        'Altura': 1.81,
+        'Edad': 32,
+    },
+}
 
-print(numbers)
-print(type(numbers))
+print(contacts)
+print(contacts['Persona_1'])
