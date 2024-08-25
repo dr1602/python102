@@ -1,3 +1,8 @@
+# si copio una lista (a = b), este apuntara ambien al mismo espacio en memoria
+# entonces, si modifico a, estos cambios tambien se veran en b
+
+# si queremos evitar eso, debemos usar slicing
+
 a = [1, 2, 3, 4, 5]
 b = a
 
