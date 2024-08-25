@@ -1,5 +1,9 @@
-is_true = True
-is_false = False
+a = 10
+b = 3
 
-print(type(is_true))
-print(is_false)
+print ( a > b)
+print(a < b)
+print(a >= b)
+print(a <= b)
+print(a == b)
+print(a != b)
