@@ -1,13 +1,8 @@
-numbers = [1, 2, 3, 4, 5, 6]
-
-for i in numbers:
-    if i == 3:
-        continue
-    print('Aqui es igual a: ', i)
-    
-# uso de break
-
-for i in numbers:
-    if i == 3:
-        break
-    print('Aqui es igual a: ', i)
+def Fibonacci(limit):
+    a, b = 0, 1
+    while a < limit :
+        yield a
+        a, b = b, a + b
+        
+for num in Fibonacci(10):
+    print(num)
