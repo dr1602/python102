@@ -1,8 +1,10 @@
-def Fibonacci(limit):
-    a, b = 0, 1
-    while a < limit :
-        yield a
-        a, b = b, a + b
+limitImpar = 9
+    
+# Generador para impares
+
+def Impares(limit):
+    for num in range(1, limit + 1, 2):
+        yield num
         
-for num in Fibonacci(10):
+for num in Impares(limitImpar):
     print(num)

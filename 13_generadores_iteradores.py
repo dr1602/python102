@@ -71,3 +71,48 @@ for num in Fibonacci(10):
     print(num)
     
 # crear generadores para ver numeros pares e impares
+
+class Reverse:
+    """Iterator for looping over a sequence backwards."""
+    def __init__(self, data):
+        self.data = data
+        self.index = len(data)
+        
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        if self.index == 0:
+            raise StopIteration
+        self.index = self.index - 1
+        return self.data[self.index]
+    
+rev = Reverse('spam')
+
+iter(rev)
+
+for char in rev:
+    print(char)
+    
+# array para generador de pares e impares
+limitPar = 22
+
+# Generador para pares
+
+def Pares(limit):
+    for num in range(0, limit + 1, 2):
+        yield num
+        
+for num in Pares(limitPar):
+    print(num)
+    
+limitImpar = 9
+    
+# Generador para impares
+
+def Impares(limit):
+    for num in range(1, limit + 1, 2):
+        yield num
+        
+for num in Impares(limitImpar):
+    print(num)
