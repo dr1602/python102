@@ -1,87 +1,107 @@
-class Book:
-    def __init__(self, title, author):
-        self.title = title
-        self.author = author
-        self.available = True
-    
-    def borrow(self):
-        if self.available:
-            self.available = False
-            print(f'El libro {self.title}, se la ha sido prestado a usted.')
-        else:
-            print(f'El libro {self.title} no se encuentra disponible.')
-    
-    def return_book(self):
-        self.available = True
-        print(f'Usted ha regresado el libro {self.title}, exitosamente.')
-        
-class User:
-    def __init__( self, name, user_id ):
+# concesionaria (compra, venta), vehiculos (disponibles, precio), usuarios(comprar, vender, carro, saldo)
+class Car:
+    def __init__(self, name, model, price):
         self.name = str(name)
-        self.user_id = user_id
-        self.borrowed_books = []
-        
-    def borrow_book(self, book):
-        if book.available:
-            book.borrow()
-            self.borrowed_books.append(book)
-        else:
-            print(f'El libro {book.title} no se encuentra disponible')
+        self.model = int(model)
+        self.price = int(price)
+        self.business_owned = True
+        self.person_owned = False
     
-    def return_book(self, book):
-        if book in self.borrowed_books:
-            book.return_book()
-            self.borrowed_books.remove(book)
+    def sold_by_business(self, budget):
+        if self.business_owned:
+            if self.price >= budget:
+                self.business_owned = False
+                self.person_owned = True
+                print(f'El carro {self.name}, fue vendido por por el negocio')
+            else:
+                print(f'El carro {self.name}, no puede ser vendido a la persona por falta de presupuesto')
         else:
-            print(f'Usted no tiene el libro {book.title}')
+            print(f'El carro {self.name}, no puede ser vendido ya que no se encuentra disponible en el negocio.')
+    
+    def sold_by_person(self, budget):
+        if self.person_owned:
+            if self.price >= budget:
+                self.person_owned = False
+                self.business_owned = True
+                print(f'El carro {self.name}, fue vendido por la persona')
+            else:
+                print(f'El carro {self.name}, no puede ser comprado por el negocio falta de presupuesto')
+        else:
+            print(f'El carro {self.name}, no puede ser vendido ya que la persona no cuenta con el carro.')
+        
+class Person:
+    def __init__( self, name, budget ):
+        self.name = str(name)
+        self.budget = int(budget)
+        self.owned_cars = []
+        
+    def buy_car(self, car):
+        if car.business_owned:
+            if car.price <= self.budget:         
+                car.sold_by_business()
+                self.owned_cars.append(car)
+                self.budget -= car.price
+                print(f'Usted ha comprado el carro {car.name}, por {car.price}. Ahora su presupuesto disponible es: {self.budget}')
+            else:
+                print(f'Usted no puede comprar el carro {car.name}, le faltan {car.price - self.budget}.')
+        else:
+            print(f'El carro {car.name} no esta a la venta en el negocio')
+    
+    def sell_car(self, car, business ):
+        if car.person_owned:
+            if car.price <= business.budget:         
+                car.sold_by_person()
+                self.owned_cars.remove(car)
+                self.budget += car.price
+                business.budget -= car.price
+                print(f'Usted ha vendido el carro {car.name}, por {car.price}. Ahora su presupuesto disponible es: {self.budget}')
+            else:
+                print(f'Usted no puede vender el carro {car.name}, el negocio no tiene suficiente dinero para comprar.')
+        else:
+            print(f'Usted no tiene el carro {car.name} por lo que no lo puede vender')
             
-class Library:
-    def __init__(self):
-        self.books = []
-        self.users = []
+class Business:
+    def __init__( self, name, budget ):
+        self.name = str(name)
+        self.budget = int(budget)
+        self.owned_cars = []
         
-    def add_book(self, book):
-        self.books.append(book)
-        print(f'El libro {book.title} ha sido agregado a la bibiliteca')
-    
-    def register_user(self, user):
-        self.users.append(user)
-        print(f'El usuario {user.name} ha sido registrado en la bibilitecas')
+    def buy_car(self, car, person):
+        if car.person_owned:
+            if car.price <= business.budget:         
+                car.sold_by_person()
+                self.owned_cars.append(car)
+                self.budget -= car.price
+                person.budget += car.price
+                print(f'Usted ha comprado el carro {car.name}, por {car.price}. Ahora su presupuesto disponible es: {self.budget}')
+            else:
+                print(f'Usted no puede comprar el carro {car.name}, le faltan {car.price - self.budget}.')
+        else:
+            print(f'El carro {car.name} no esta a la venta por la persona')
         
-    def show_available_books(self):
-        print('Libros disponibles: ')
-        for book in self.books:
-            if book.available:
-                print(f'{book.title} por {book.author}')
+    def sell_car(self, car, person ):
+        if car.business_owned:
+            if car.price <= person.budget:         
+                car.sold_by_business()
+                self.owned_cars.remove(car)
+                self.budget += car.price
+                person.budget -= car.price
+                print(f'Usted ha vendido el carro {car.name}, por {car.price}. Ahora su presupuesto disponible es: {self.budget}')
+            else:
+                print(f'Usted no puede vender el carro {car.name}, la persona no tiene suficiente dinero para comprar.')
+        else:
+            print(f'Usted no tiene el carro {car.name} por lo que no lo puede vender')
                 
-# Crear libros      
-book1 = Book('El principito', 'Antoine de Saint-Exupery')
-book2 = Book('El principe', 'Machiavelo')
-book3 = Book('El arte de la guerra', 'Tsun Tzu')
+# Create cars
+car1 = Car('Toyota', 2020, 10000)
+car2 = Car('Honda', 2021, 12000)
 
-# Crear usuario
-user1 = User('Carli', 'A001')
+# Create person and business
+person1 = Person('Carlos', 15000)
+business = Business('AutoDealer', 50000)
 
-# Crear biblioteca
-library = Library()
-library.add_book(book1)
-library.add_book(book2)
-library.add_book(book3)
-library.register_user(user1)
+# Business sells car to person
+person1.buy_car(car1)
 
-# Mostrar libros
-library.show_available_books()
-
-# Realizar un prestamo
-user1.borrow_book(book1)
-
-# Mostrar libros
-library.show_available_books()
-
-# Devolver libro
-user1.return_book(book1)
-
-# Mostrar libros
-library.show_available_books()
-
-                
+# Person sells car back to business
+person1.sell_car(car1, business)
