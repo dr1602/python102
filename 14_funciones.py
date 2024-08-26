@@ -1,3 +1,12 @@
+def greet(name, last_name='No tiene apellido'):
+    print('Hola', name, last_name)
+    
+greet('Dave', "Mesteem")
+greet('my friend')
+
+greet(last_name = 'Florida', name = 'Carli')
+
+# funcion calculadora
 
 def add(a, b):
     return a + b
