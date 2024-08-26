@@ -70,7 +70,7 @@ class Customer:
         self.name = name
         self.purchased_vehicles = []
         
-    def buy_car(self, vehicle: Vehicle):
+    def buy_vehicle(self, vehicle: Vehicle):
         if vehicle.check_available():
             vehicle.sell()
             self.purchased_vehicles.append(vehicle)
@@ -99,7 +99,35 @@ class Dealership:
         
     def show_available_vehicles(self):
         print('Los vehiculos disponibles en la tienda son: ')
-        for vehicle in inventory:
+        for vehicle in self.inventory:
             if vehicle.check_available():
                 print(f'- {vehicle.brand} por {vehicle.get_price()}')
     
+# herencia, abstraccion, encapsulamiento y polimorfismo
+
+car1 = Car('Toyota', 'Prius', 20000)
+bike1 = Bike('Yamaha', 'TRI-2024', 5000)
+truck1 = Truck('Mercedes', 'FH12', 80000)
+
+customer1 = Customer('Carli')
+
+dealership = Dealership()
+dealership.add_vehicles(car1)
+dealership.add_vehicles(bike1)
+dealership.add_vehicles(truck1)
+
+# Mostrar vehiculos disponibles
+
+dealership.show_available_vehicles()
+
+# Cliente va a consultar un vehiculo
+
+customer1.inquire_vehicle(car1)
+
+# Cliente va a comprar un vehiculo, al saber que esta disponible
+
+customer1.buy_vehicle(car1)
+
+# Mostrar vehiculos disponibles
+
+dealership.show_available_vehicles()
