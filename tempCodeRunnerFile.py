@@ -1,7 +1,4 @@
-def print_exception_hierarchy(exception_class, indent=0):
-    print(' ' * indent + exception_class.__name__)
-    for subclass in exception_class.__subclasses__():
-        print_exception_hierarchy(subclass, indent + 4)
+def sumatoria_numeros_naturales(n):
+    return (( n * (n + 1) )/2)
 
-# Imprimir la jerarquía comenzando desde la clase base Exception
-print_exception_hierarchy(Exception)
+sumatoria = print(sumatoria_numeros_naturales(100))
