@@ -107,10 +107,15 @@ class Computer(Player):
         
         ships_array = []
         
-        PortaavionesComputer = Portaaviones(int(random.random() * 10),int(random.random() * 10),'Vertical')
-        SubmarinoComputer = Submarino(int(random.random() * 10),int(random.random() * 10),'Vertical')
-        DestructorComputer = Destructor(int(random.random() * 10),int(random.random() * 10),'Vertical')
-        FragataComputer = Fragata(int(random.random() * 10),int(random.random() * 10),'Vertical')
+        opciones = [
+            'Vertical',
+            'Horizontal',
+        ]
+        
+        PortaavionesComputer = Portaaviones(int(random.random() * 10),int(random.random() * 10),opciones[int(round(random.random(),0)*1)])
+        SubmarinoComputer = Submarino(int(random.random() * 10),int(random.random() * 10),opciones[int(round(random.random(),0)*1)])
+        DestructorComputer = Destructor(int(random.random() * 10),int(random.random() * 10),opciones[int(round(random.random(),0)*1)])
+        FragataComputer = Fragata(int(random.random() * 10),int(random.random() * 10),opciones[int(round(random.random(),0)*1)])
         
         ships_array.append(PortaavionesComputer)
         ships_array.append(SubmarinoComputer)
@@ -118,8 +123,6 @@ class Computer(Player):
         ships_array.append(FragataComputer)
         
         self.ships = ships_array[:]
-        
-
         
     def check_user_name(self):
         print(f'Soy {self.name}, tu oponente')
@@ -158,31 +161,49 @@ class Board:
             i += 1
             
 class Player_Board(Board):
-    def __init__(self):
+    def __init__(self, player):
         super().__init__()
-    
-    def show_player_board(self):
-        self.show()
-    
-    def add_ship(self, player):
+        self.player = player
+        
         i = 0
         while i < len(player.ships):
             
             n = 0
             while n < player.ships[i].lenght:
-                if player.ships[i].lenght == 'Vertical':
+                if player.ships[i].orientation == 'Horizontal':
                     self.board[player.ships[i].initial_position_y - 1][player.ships[i].initial_position_x - 1 + n] = str(player.ships[i].id)
-                else:
+                elif player.ships[i].orientation == 'Vertical':
                     self.board[player.ships[i].initial_position_y - 1 + n][player.ships[i].initial_position_x - 1] = str(player.ships[i].id)
                 n += 1
             i += 1
-                    
-        print(f'Est es el tablero de {player.name}')
+    
+    def show_player_board(self):                   
+        print(f'Est es el tablero de {self.player.name}')
+        self.show()
+        
+    def attack(self):
+        x = int(random.random() * 10)
+        y = int(random.random() * 10)
+        attacked_item = self.board[y-1][x-1]
+
+        # Busca el barco correspondiente basado en su id
+        for ship in self.player.ships:
+            if ship.id == attacked_item:  # Esto encuentra el barco correcto
+                ship.hits_taken += 1
+                remaining_lifes = ship.lenght - ship.hits_taken
+                if remaining_lifes == 0:
+                    print(f'El barco {ship.name} ha sido hundido')
+                    self.player.ships.remove(ship)  # Remueve el barco hundido
+                break
+
+        self.board[y-1][x-1] = 'X'
+        print(f'Han atacado atacado al tablero de {self.player.name}')
         self.show()
 
 class Computer_Board(Board):
-    def __init__(self):
+    def __init__(self, player):
         super().__init__()
+        self.player = player
         board_x = []
         
         x = 0
@@ -195,55 +216,149 @@ class Computer_Board(Board):
             board_x.append(board_y)
             x += 1
             
-        self.hidden_ships = board_x
-    
-    def show_player_board(self):
-        self.show()
-    
-    def add_ship(self, player):
         i = 0
         while i < len(player.ships):
             
             n = 0
             while n < player.ships[i].lenght:
-                if player.ships[i].lenght == 'Vertical':
+                if player.ships[i].orientation == 'Horizontal':
                     self.board[player.ships[i].initial_position_y - 1][player.ships[i].initial_position_x - 1 + n] = str(player.ships[i].id)
-                else:
+                elif player.ships[i].orientation == 'Vertical':
                     self.board[player.ships[i].initial_position_y - 1 + n][player.ships[i].initial_position_x - 1] = str(player.ships[i].id)
                 n += 1
             i += 1
-
-        y = 1
-
-                    
-        print(f'Est es el tablero de {player.name}')
-        self.show()
-        
-        print(f'Est es el tablero escondido de {player.name}')
-        while y < 11 :
-            print(f'{self.hidden_ships[y-1:y]}')
             
-            y += 1
+        self.hidden_ships = board_x
     
+    def show_player_board(self):                   
+        print(f'Est es el tablero de {self.player.name}')
+        self.show()  
+    
+    def attack(self, x, y):
+        attacked_item = self.board[y-1][x-1]
 
+        # Busca el barco correspondiente basado en su id
+        for ship in self.player.ships:
+            if ship.id == attacked_item:  # Esto encuentra el barco correcto
+                ship.hits_taken += 1
+                remaining_lifes = ship.lenght - ship.hits_taken
+                if remaining_lifes == 0:
+                    print(f'El barco {ship.name} ha sido hundido')
+                    self.player.ships.remove(ship)  # Remueve el barco hundido
+                break
+
+            self.board[y-1][x-1] = 'X'
+        print(f'Han atacado atacado al tablero de {self.player.name}')
+        self.show()
+
+def juego():
+    print('Vamos a jugar Batalla Naval')
+    print('Si en algún momento el juego te marca error, para el juego con CTRL + C y vuelve a correr la funcion juego(), empezarás de cero pero podrás jugar.')
+    
+    opcion = str(input('¿Quieres jugar un juego de configuración rápida? (Escribe S para o N para no ): '))
+    
+    if opcion == 'S' or opcion == 's' or opcion == 'Si' or opcion == 'si' or opcion == 'Sí' or opcion == 'sí':
+        human_name = 'Fulane'
+        human = Human(human_name)
         
-PortaavionesHuman = Portaaviones(1,2,'Vertical')
-SubmarinoHuman = Submarino(2,2,'Vertical')
-DestructorHuman = Destructor(3,2,'Vertical')
-FragataHuman = Fragata(4,2,'Vertical')
+        computer_name = 'Computina'
+        computer = Computer(computer_name)
+        
+        
+        PortaavionesX = 1
+        PortaavionesY = 1
+        PortaavionesOrientacion = 'Horizontal'
+        human.set_ships(Portaaviones(PortaavionesX,PortaavionesY,PortaavionesOrientacion))
+        
+        SubmarinoX = 2
+        SubmarinoY = 2
+        SubmarinoOrientacion = 'Horizontal'
+        human.set_ships(Submarino(SubmarinoX,SubmarinoY,SubmarinoOrientacion))
+        
+        DestructorX = 3
+        DestructorY = 3
+        DestructorOrientacion = 'Horizontal'
+        human.set_ships(Destructor(DestructorX,DestructorY,DestructorOrientacion))
+        
+        FragataX = 4
+        FragataY = 4
+        FragataOrientacion = 'Horizontal'
+        human.set_ships(Fragata(FragataX,FragataY,FragataOrientacion))    
+            
+        player_board = Player_Board(human)
+        player_board.show_player_board()
 
-human = Human('Marcelo')
-human.set_ships(PortaavionesHuman)
-human.set_ships(SubmarinoHuman)
-human.set_ships(DestructorHuman)
-human.set_ships(FragataHuman)
+        computer_board = Computer_Board(computer)
+        computer_board.show_player_board()
 
+        x = 0
+        while x < 15:
+            print('¡Vamos a atacar!')
+            atack_x_axis = int(input('Escoge la coordenada en x que quiers atacar del 1 al 10 (números enteros): '))
+            atack_y_axis = int(input('Escoge la coordenada en x que quiers atacar del 1 al 10 (números enteros): '))
+            computer_board.attack(atack_x_axis,atack_y_axis)
+            print(f'Aun le quedan a la computadora {int(len(computer.ships))} naves')
+            if int(len(computer.ships)) == 0:
+                'A lo computadora no le quedan naves, has GANADO.'
+                break
+            
+            print('¡Le toca a la computadora atacar!')
+            player_board.attack()
+            print(f'Aun te quedan {int(len(human.ships))} naves')
+            if int(len(human.ships)) == 0:
+                'No te quedan naves, has perdido.'
+                break
+        
+    else:
+        human_name = str(input('¿Cuál es tu nombre?: '))
+        human = Human(human_name)
+        
+        computer_name = str(input('¿Cuál es el nombre de tu rival?: '))
+        computer = Computer(computer_name)
+        
+        
+        PortaavionesX = int(input('Ingresa las coordenadas x de tu Portaaviones: '))
+        PortaavionesY = int(input('Ingresa las coordenadas x de tu Portaaviones: '))
+        PortaavionesOrientacion = str(input('Ingresa la orientación de tu Portaaviones (Horizontal o Vertical): '))
+        human.set_ships(Portaaviones(PortaavionesX,PortaavionesY,PortaavionesOrientacion))
+        
+        SubmarinoX = int(input('Ingresa las coordenadas x de tu Submarino: '))
+        SubmarinoY = int(input('Ingresa las coordenadas x de tu Submarino: '))
+        SubmarinoOrientacion = str(input('Ingresa la orientación de tu Submarino (Horizontal o Vertical): '))
+        human.set_ships(Submarino(SubmarinoX,SubmarinoY,SubmarinoOrientacion))
+        
+        DestructorX = int(input('Ingresa las coordenadas x de tu Destructor: '))
+        DestructorY = int(input('Ingresa las coordenadas x de tu Destructor: '))
+        DestructorOrientacion = str(input('Ingresa la orientación de tu Destructor (Horizontal o Vertical): '))
+        human.set_ships(Destructor(DestructorX,DestructorY,DestructorOrientacion))
+        
+        FragataX = int(input('Ingresa las coordenadas x de tu Fragata: '))
+        FragataY = int(input('Ingresa las coordenadas x de tu Fragata: '))
+        FragataOrientacion = str(input('Ingresa la orientación de tu Fragata (Horizontal o Vertical): '))
+        human.set_ships(Fragata(FragataX,FragataY,FragataOrientacion))    
+            
+        player_board = Player_Board(human)
+        player_board.show_player_board()
 
-computer = Computer('Computina')
+        computer_board = Computer_Board(computer)
+        computer_board.show_player_board()
+    
+        x = 0
+        while x < 15:
+            print('¡Vamos a atacar!')
+            atack_x_axis = int(input('Escoge la coordenada en x que quiers atacar del 1 al 10 (números enteros): '))
+            atack_y_axis = int(input('Escoge la coordenada en x que quiers atacar del 1 al 10 (números enteros): '))
+            computer_board.attack(atack_x_axis,atack_y_axis)
+            print(f'Aun le quedan a la computadora {int(len(computer.ships))} naves')
+            if int(len(computer.ships)) == 0:
+                'A lo computadora no le quedan naves, has GANADO.'
+                break
+            
+            print('¡Le toca a la computadora atacar!')
+            player_board.attack()
+            print(f'Aun te quedan {int(len(human.ships))} naves')
+            if int(len(human.ships)) == 0:
+                'No te quedan naves, has perdido.'
+                break
 
-player_board = Player_Board()
-player_board.add_ship(human)
-
-computer_board = Computer_Board()
-computer_board.add_ship(computer)
-
+juego()
